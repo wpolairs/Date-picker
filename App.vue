@@ -1,5 +1,5 @@
 <template>
-    <date-picker />
+    <date-picker :date="date" />
 </template>
 
 <script>
@@ -7,6 +7,11 @@ import datePicker from './DatePicker'
 export default {
     components:{
         datePicker,
+    },
+    data(){
+        return {
+            date:new Date(),
+        }
     }
 }
 </script>

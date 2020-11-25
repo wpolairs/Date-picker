@@ -1,13 +1,19 @@
 <template>
-    <div class="date-picker">
+    <div 
+    class="date-picker"
+    v-click-outside
+    >
         <div class="picker-input">
             <span class="input-prefix">
                 <i class="iconfont icon-date"></i>
             </span>
-            <input type="text">
+            <input type="text" :value="chooseDate">
         </div>
 
-        <div class="picker-panel">
+        <div 
+        class="picker-panel"
+        v-if="showPicker"
+        >
             <div class="picker-arrow" />
             <div class="picker-body">
                 <div class="picker-header">
@@ -40,10 +46,47 @@
 
 <script>
 export default {
+    props:{
+        date:{
+            type:Date,
+            default:()=>new Date(),
+        }
+    },
+    directives:{
+        "click-outside":{
+            bind(el,binding,vnode){
+                const vm = vnode.context;
+                document.onclick = e=>{
+                    const isElson = el.contains(e.target);
+                    if(isElson && !vm.showPicker){
+                        vm.changeShow(true);
+                    }else if(!isElson && vm.showPicker){
+                        vm.changeShow(false)
+                    }
+                    
+                }
+                
+            }
+        }
+    },
     data(){
         return {
             weeks:["日","一","二","三","四","五","六"],
             isActive:false,
+            showPicker:false,
+        }
+    },
+    computed:{
+        chooseDate(){
+            const year = this.date.getFullYear();
+            const month = this.date.getMonth();
+            const day = this.date.getDay();
+            return `${year}-${month+1}-${day}`
+        }
+    },
+    methods:{
+        changeShow(flag){
+            this.showPicker = flag;
         }
     }
 }
@@ -52,12 +95,15 @@ export default {
 <style scoped>
 @import "./asset/font.css";
 .picker-input{
-    width: 280px;
+    width: 250px;
     height: 40px;
     position: relative;
 }
+.date-picker{
+    display: inline-block;
+}
 .picker-input input{
-    width: 80%;
+    width: 100%;
     height: 40px;
     line-height: 40px;
     outline: none;
@@ -99,6 +145,8 @@ export default {
     box-shadow: 2px 2px 4px #ccc;
     margin-top: 10px;
     display: inline-block;
+    background: #fff;
+    position: absolute;
 }
 
 .picker-header{
@@ -142,6 +190,9 @@ export default {
     color: rgb(138, 135, 135);
     cursor: pointer;
     user-select: none;
+}
+.picker-content .picker-day div:hover{
+    color: rgb(0, 195, 255);
 }
 .active{
     background-color: rgb(8, 142, 231);
